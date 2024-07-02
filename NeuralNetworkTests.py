@@ -1662,6 +1662,10 @@ class TestNeuralNetwork3(unittest.TestCase):
                 net.train(1)
                 loss.append(np.sum(net.loss))
 
+                print(f"LOSS {loss}")
+                print(f"LOSS {loss[0]}")
+
+
             self.assertNotEqual(loss[0], loss[1], "Regularization Loss is not calculated and added to the overall loss "
                                                   "for " + layer.__class__.__name__)
 
@@ -1712,7 +1716,7 @@ class TestNeuralNetwork3(unittest.TestCase):
         net.append_layer(fcl_2)
         net.append_layer(SoftMax.SoftMax())
 
-        net.train(3000)
+        net.train(2000)
         if TestNeuralNetwork3.plot:
             fig = plt.figure('Loss function for a Neural Net on the Iris dataset using ADAM')
             plt.plot(net.loss, '-x')

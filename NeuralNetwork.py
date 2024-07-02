@@ -1,3 +1,5 @@
+import copy
+
 import numpy as np
 from copy import deepcopy
 
@@ -11,6 +13,27 @@ class NeuralNetwork:
         self.loss_layer = None  # Placeholder for loss layer (special layer providing loss and prediction)
         self.weights_initializer = weight_initializer
         self.bias_initializer = bias_initializer
+
+    # def forward(self):
+    #     # Get input and labels from data layer
+    #     input_tensor, self.label_tensor = self.data_layer.next()
+    #     regularize_loss = 0
+    #     # Forward pass through all layers
+    #     for layer in self.layers:
+    #         layer.testing_phase = False
+    #         input_tensor = layer.forward(input_tensor)
+    #         if self.optimizer.regularizer is not None:
+    #             regularize_loss += self.optimizer.regularizer.norm(layer.weights)
+    #     global_loss = self.loss_layer.forward(input_tensor, copy.deepcopy(self.label_tensor))
+    #
+    #     # Store the label tensor for backward pass
+    #     # self.label_tensor = label_tensor
+    #
+    #     # output = self.loss_layer.forward(input_tensor, label_tensor)
+    #
+    #     output = global_loss + regularize_loss
+    #
+    #     return output
 
     def forward(self):
         # Get input and labels from data layer
@@ -26,6 +49,19 @@ class NeuralNetwork:
         output = self.loss_layer.forward(input_tensor, label_tensor)
 
         return output
+
+    # def forward(self):
+    #     data, self.label_tensor = copy.deepcopy(self.data_layer.next())
+    #     reg_loss = 0
+    #     for layer in self.layers:
+    #         layer.testing_phase = False
+    #         data = layer.forward(data)
+    #         if self.optimizer.regularizer is not None:
+    #             reg_loss += self.optimizer.regularizer.norm(layer.weights)
+    #     glob_loss = self.loss_layer.forward(data, copy.deepcopy(self.label_tensor))
+    #     return glob_loss + reg_loss
+
+
 
     def backward(self):
         # Start the backward pass from the loss layer using the stored label tensor
@@ -54,6 +90,7 @@ class NeuralNetwork:
         self.phase = 'test'
         # Forward pass through all layers using the input tensor
         for layer in self.layers:
+            layer.testing_phase = True
             input_tensor = layer.forward(input_tensor)
 
         return input_tensor
@@ -64,8 +101,4 @@ class NeuralNetwork:
 
     @phase.setter
     def phase(self, value):
-        if value not in ['train', 'test']:
-            raise ValueError("Phase must be 'train' or 'test'")
         self._phase = value
-        for layer in self.layers:
-            layer.set_phase(value)

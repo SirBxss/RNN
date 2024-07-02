@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class L1_Regularizer:
     def __init__(self, alpha):
         self.alpha = alpha  # Regularization weight
@@ -23,4 +24,4 @@ class L2_Regularizer:
 
     def norm(self, weights):
         # Calculate the L2 norm of the weights
-        return self.alpha * np.sum(weights**2)
+        return self.alpha * np.sum(weights ** 2)

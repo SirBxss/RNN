@@ -3,9 +3,9 @@ class BaseLayer:
         self.trainable = False
         self.weights = None
         self.testing_phase = False
-        self.phase = 'train'
-
-
-class Phase:
-    train = 'train'
-    test = 'test'
+#         self.phase = 'train'
+#
+#
+# class Phase:
+#     train = 'train'
+#     test = 'test'

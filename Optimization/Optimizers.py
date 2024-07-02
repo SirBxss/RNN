@@ -9,18 +9,33 @@ class Optimizer:
         self.regularizer = regularizer
 
 
+# class Sgd(Optimizer):
+#     def __init__(self, learning_rate: float):
+#         super().__init__()
+#         self.learning_rate = learning_rate
+#
+#     def calculate_update(self, weight_tensor, gradient_tensor):
+#         if self.regularizer:
+#             # gradient_tensor += self.regularizer.calculate_gradient(weight_tensor)
+#             weight_tensor -= self.learning_rate * self.regularizer.calculate_gradient(weight_tensor)
+#         updated_weight = weight_tensor - (self.learning_rate * gradient_tensor)
+#
+#         return updated_weight
+
 class Sgd(Optimizer):
     def __init__(self, learning_rate: float):
         super().__init__()
         self.learning_rate = learning_rate
 
     def calculate_update(self, weight_tensor, gradient_tensor):
-        if self.regularizer:
-            # gradient_tensor += self.regularizer.calculate_gradient(weight_tensor)
-            weight_tensor -= self.learning_rate * self.regularizer.calculate_gradient(weight_tensor)
-        updated_weight = weight_tensor - (self.learning_rate * gradient_tensor)
-
-        return updated_weight
+        if type(weight_tensor) is not np.ndarray:
+            temp = weight_tensor
+        else:
+            temp = weight_tensor.copy()
+        weight_tensor -= self.learning_rate * gradient_tensor
+        if self.regularizer is not None:
+            weight_tensor -= self.learning_rate * self.regularizer.calculate_gradient(temp)
+        return weight_tensor
 
 
 class SgdWithMomentum(Optimizer):
