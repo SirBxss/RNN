@@ -110,6 +110,7 @@ class RNN(Base.BaseLayer):
     def weights(self, weights):
         self._weights = weights
 
+
     @property
     def gradient_weights(self):
         return self.gradient_weights_n

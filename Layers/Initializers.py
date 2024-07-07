@@ -6,7 +6,7 @@ class Constant:
         self.value = value
 
     def initialize(self, weights_shape, fan_in, fan_out):
-        return np.full(weights_shape, self.value)
+        return np.zeros(weights_shape) + self.value
 
 
 class UniformRandom:

@@ -32,9 +32,12 @@ class Sgd(Optimizer):
             temp = weight_tensor
         else:
             temp = weight_tensor.copy()
+        print(f"Original Weights: {weight_tensor}")
         weight_tensor -= self.learning_rate * gradient_tensor
+        print(f"Weights after Gradient Update: {weight_tensor}")
         if self.regularizer is not None:
             weight_tensor -= self.learning_rate * self.regularizer.calculate_gradient(temp)
+            print(f"Weights after Regularizer Update: {weight_tensor}")
         return weight_tensor
 
 

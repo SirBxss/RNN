@@ -83,6 +83,15 @@ class FullyConnected(BaseLayer):
         # Return the gradient for weights from the combined gradients
         return self.grad_weights
 
+    @property
+    def weights(self):
+        return self._weights
+
+    @weights.setter
+    def weights(self, weights):
+        self._weights = weights
+
+
     # @property
     # def gradient_biases(self):
     #     # Return the gradient for biases from the combined gradients

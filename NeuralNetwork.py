@@ -35,20 +35,20 @@ class NeuralNetwork:
     #
     #     return output
 
-    def forward(self):
-        # Get input and labels from data layer
-        input_tensor, label_tensor = self.data_layer.next()
-
-        # Forward pass through all layers
-        for layer in self.layers:
-            input_tensor = layer.forward(input_tensor)
-
-        # Store the label tensor for backward pass
-        self.label_tensor = label_tensor
-
-        output = self.loss_layer.forward(input_tensor, label_tensor)
-
-        return output
+    # def forward(self):
+    #     # Get input and labels from data layer
+    #     input_tensor, label_tensor = self.data_layer.next()
+    #
+    #     # Forward pass through all layers
+    #     for layer in self.layers:
+    #         input_tensor = layer.forward(input_tensor)
+    #
+    #     # Store the label tensor for backward pass
+    #     self.label_tensor = label_tensor
+    #
+    #     output = self.loss_layer.forward(input_tensor, label_tensor)
+    #
+    #     return output
 
     # def forward(self):
     #     data, self.label_tensor = copy.deepcopy(self.data_layer.next())
@@ -57,9 +57,31 @@ class NeuralNetwork:
     #         layer.testing_phase = False
     #         data = layer.forward(data)
     #         if self.optimizer.regularizer is not None:
-    #             reg_loss += self.optimizer.regularizer.norm(layer.weights)
+    #             if hasattr(layer, 'weights'):
+    #                 reg_loss += self.optimizer.regularizer.norm(layer.weights)
+    #                 print(f"WEIGHTS : \n{layer.weights}")
+    #                 print(f"REGULARIZE LOSS : \n{reg_loss}")
     #     glob_loss = self.loss_layer.forward(data, copy.deepcopy(self.label_tensor))
+    #     print(f"GLOBAL LOSS : {glob_loss}")
     #     return glob_loss + reg_loss
+
+    def forward(self):
+        data, self.label_tensor = copy.deepcopy(self.data_layer.next())
+        reg_loss = 0
+        for layer in self.layers:
+            layer.testing_phase = False
+            data = layer.forward(data)
+            if self.optimizer.regularizer is not None:
+                if hasattr(layer, 'weights'):
+                    reg_loss += self.optimizer.regularizer.norm(layer.weights)
+                    print(f"Layer: {layer.__class__.__name__}")
+                    print(f"Weights:\n{layer.weights}")
+                    print(f"Regularization Loss (so far): {reg_loss}")
+        glob_loss = self.loss_layer.forward(data, copy.deepcopy(self.label_tensor))
+        print(f"Global Loss (before regularization): {glob_loss}")
+        total_loss = glob_loss + reg_loss
+        print(f"Total Loss (after regularization): {total_loss}")
+        return total_loss
 
 
 
@@ -80,11 +102,11 @@ class NeuralNetwork:
     def train(self, iterations):
         self.phase = 'train'
         for _ in range(iterations):
-            self.forward()
+            loss = self.forward()
+            print(f"LOSS FOR NEURAL NETWORK : {loss}")
             self.backward()
             # Calculate and store the loss for the current iteration
-            loss_value = self.loss_layer.loss
-            self.loss.append(loss_value)
+            self.loss.append(loss)
 
     def test(self, input_tensor):
         self.phase = 'test'
@@ -100,5 +122,5 @@ class NeuralNetwork:
         return self._phase
 
     @phase.setter
-    def phase(self, value):
-        self._phase = value
+    def phase(self, phase):
+        self._phase = phase

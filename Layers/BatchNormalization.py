@@ -2,6 +2,7 @@ import numpy as np
 from Layers import Base, Helpers
 import copy
 
+
 class BatchNormalization(Base.BaseLayer):
     def __init__(self, channels):
         super().__init__()

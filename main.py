@@ -1,29 +1,45 @@
 import numpy as np
 from Layers import BatchNormalization
 from Optimization import *
+from Layers import *
+import NeuralNetwork
 
+class test:
+    def test_regularization_loss(self):
+        import random
+        fcl = FullyConnected.FullyConnected(4, 3)
+        rnn = RNN.RNN(4, 4, 3)
+        tolerance = 1e-5
 
-def test_batch_normalization_updates():
-    input_tensor = np.random.randn(10, 5)
-    channels = input_tensor.shape[-1]
-    layer = BatchNormalization(1, channels)
-    layer.optimizer = Optimizers.Sgd(0.01)  # Assuming this is the correct usage in your context
+        for layer in [fcl, rnn]:
+            loss = []
+            for reg in [False, True]:
+                opt = Optimizers.Sgd(1e-3)
+                if reg:
+                    opt.add_regularizer(Constraints.L1_Regularizer(8e-2))
+                net = NeuralNetwork.NeuralNetwork(opt, Initializers.Constant(0.5),
+                                                  Initializers.Constant(0.1))
 
-    initial_output = layer.forward(input_tensor)
-    print("Initial output calculated.")
+                net.data_layer = Helpers.IrisData(100, random=False)
+                net.loss_layer = Loss.CrossEntropyLoss()
+                net.append_layer(layer)
+                net.append_layer(SoftMax.SoftMax())
+                net.train(1)
+                current_loss = np.sum(net.loss)
+                loss.append(current_loss)
 
-    for _ in range(10):
-        error_tensor = -layer.forward(input_tensor)
-        layer.backward(error_tensor)
+                print(f"Layer: {layer.__class__.__name__}, Regularizer: {reg}")
+                print(f"LOSS: {loss}")
+                print(f"Regularization Loss (if reg): {current_loss - np.sum(net.loss_layer.loss)}")
 
-    new_output = layer.forward(input_tensor)
-    print("New output calculated after training.")
-
-    assert np.sum(np.power(new_output, 2)) < np.sum(np.power(initial_output, 2)), "Output did not decrease."
+            self.assertFalse(np.isclose(loss[0], loss[1], atol=tolerance),
+                             "Regularization Loss is not calculated and added to the overall loss "
+                             "for " + layer.__class__.__name__)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    test_batch_normalization_updates()
+    tester = test()
+    tester.test_regularization_loss()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

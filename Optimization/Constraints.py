@@ -3,15 +3,17 @@ import numpy as np
 
 class L1_Regularizer:
     def __init__(self, alpha):
-        self.alpha = alpha  # Regularization weight
+        self.alpha = alpha
 
     def calculate_gradient(self, weights):
-        # Calculate the subgradient of L1 norm
-        return self.alpha * np.sign(weights)
+        grad = self.alpha * np.sign(weights)
+        print(f"Regularizer Gradient: {grad}")
+        return grad
 
     def norm(self, weights):
-        # Calculate the L1 norm of the weights
-        return self.alpha * np.sum(np.abs(weights))
+        norm_value = self.alpha * np.sum(np.abs(weights))
+        print(f"Regularizer Norm: {norm_value}")
+        return norm_value
 
 
 class L2_Regularizer:
